@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Beshert — Help Us Test</title>
+<style>
+  :root { color-scheme: light dark; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    max-width: 560px;
+    margin: 4rem auto;
+    padding: 0 1.5rem 4rem;
+    color: #2A2A3C;
+    background: #FEF9F6;
+    line-height: 1.55;
+  }
+  h1 { color: #D8615A; text-align: center; margin-bottom: 0.25rem; }
+  .tagline { text-align: center; color: #6b6b7d; margin-top: 0; margin-bottom: 2.5rem; }
+  h2 { color: #2A2A3C; font-size: 1.05rem; margin-top: 2rem; }
+  ul { padding-left: 1.25rem; }
+  li { margin: 0.4rem 0; }
+  form {
+    margin: 2.5rem auto 0;
+    max-width: 340px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  input[type="text"], input[type="email"] {
+    padding: 0.8rem 1rem;
+    border-radius: 10px;
+    border: 1px solid #d8d3d0;
+    font-size: 1rem;
+    background: #fff;
+    color: #2A2A3C;
+  }
+  .honey { display: none; }
+  .cta {
+    background: #D8615A;
+    color: #fff;
+    border: none;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 0.9rem 1.5rem;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .note { font-size: 0.9rem; color: #6b6b7d; text-align: center; margin-top: 0.75rem; }
+  .thanks {
+    display: none;
+    text-align: center;
+    background: #f4e9d8;
+    color: #2A2A3C;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-top: 2.5rem;
+    font-weight: 600;
+  }
+  .back { display: block; text-align: center; margin-top: 3rem; color: #D8615A; }
+  @media (prefers-color-scheme: dark) {
+    body { background: #1a1a24; color: #eae8f0; }
+    h2 { color: #eae8f0; }
+    .tagline, .note { color: #a5a5b8; }
+    input[type="text"], input[type="email"] { background: #26263a; color: #eae8f0; border-color: #3a3a52; }
+    .thanks { background: #3a3324; color: #eae8f0; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Help us test Beshert</h1>
+<p class="tagline">A Jewish dating app, about to launch on Android — and we need a few real people to try it first.</p>
+
+<p>Before Beshert can go live on Google Play, Google requires us to run a short closed test with a handful of real testers for 14 days. We're a small, independent team building this — if you're willing to help, it takes about five minutes total over two weeks.</p>
+
+<h2>What's involved</h2>
+<ul>
+  <li>You'll need an Android phone and a Google account.</li>
+  <li>We'll add your email to a private tester list and send you a one-time link.</li>
+  <li>You install the app from the Play Store like normal, and just open it a few times over the next two weeks (you don't need to actually use it as a dating app — genuine opens are all Google requires).</li>
+  <li>That's it. No cost, no commitment beyond that.</li>
+</ul>
+
+<form id="tester-form" action="https://formsubmit.co/support@beshert.co.za" method="POST">
+  <input type="hidden" name="_subject" value="New Beshert Android tester signup">
+  <input type="hidden" name="_captcha" value="false">
+  <input type="hidden" name="_template" value="table">
+  <input type="hidden" name="_next" value="https://recallza.github.io/beshert-legal/test.html?submitted=1">
+  <input type="text" name="name" placeholder="Your name" required>
+  <input type="email" name="email" placeholder="Your Gmail address" required>
+  <input class="honey" type="text" name="_honey" tabindex="-1" autocomplete="off">
+  <button class="cta" type="submit">I'll help — sign me up</button>
+</form>
+<p class="note">Use the Gmail address tied to the Google account you'll install the app with — that's the one we'll add to the tester list.</p>
+
+<div class="thanks" id="thanks-banner">Thanks! We'll email you a tester link shortly.</div>
+
+<a class="back" href="index.html">&larr; Back to Beshert</a>
+
+<script>
+  if (new URLSearchParams(window.location.search).get('submitted') === '1') {
+    document.getElementById('tester-form').style.display = 'none';
+    document.getElementById('thanks-banner').style.display = 'block';
+  }
+</script>
+
+</body>
+</html>
