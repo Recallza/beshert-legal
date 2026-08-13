@@ -3,25 +3,500 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Beshert — Legal</title>
+<title>Beshert: find your beshert.</title>
+<meta name="description" content="A Jewish dating app for singles who want more than a swipe. We match you on faith, values, and the life you're building. Launching soon in South Africa.">
+
 <style>
-  :root { color-scheme: light dark; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 480px; margin: 8rem auto; padding: 0 1.5rem; text-align: center; color: #2A2A3C; background: #FEF9F6; }
-  h1 { color: #D8615A; }
-  a { display: block; margin: 1rem 0; font-size: 1.1rem; color: #D8615A; }
+  /* ---------- Tokens ---------- */
+  :root {
+    --ink: #24284F;      /* navy, headlines and structure. Beshert's own brand navy. */
+    --cream: #FEF9F6;    /* warm paper ground, Beshert's own brand cream. */
+    --paper: #FFFFFF;    /* card surfaces */
+    --coral: #E77B83;    /* primary accent, warmth, the app's gradient start */
+    --blush: #F5A8AE;    /* secondary accent, soft support, gradient end */
+    --gold: #C9971F;     /* used once, on the "care" card */
+    --dusk: #1B1830;     /* dark-mode ground, warm near-black */
+
+    --ink-soft: #6B6F8C;   /* secondary text on cream/paper */
+    --hair: #E8DFDA;       /* hairline / border on cream/paper */
+    --hero-grad: radial-gradient(120% 100% at 50% -10%, #33366B 0%, var(--ink) 55%, #191c3a 100%);
+
+    --text: var(--ink);
+    --text-soft: var(--ink-soft);
+    --bg: var(--cream);
+    --surface: var(--paper);
+    --border: var(--hair);
+    color-scheme: light dark;
+  }
+
   @media (prefers-color-scheme: dark) {
-    body { background: #1a1a24; color: #eae8f0; }
+    :root:not([data-theme="light"]) {
+      --text: #F1EEFB;
+      --text-soft: #A8A6C4;
+      --bg: var(--dusk);
+      --surface: #24213D;
+      --border: #35314F;
+      --hero-grad: radial-gradient(120% 100% at 50% -10%, #2A2C56 0%, #17182E 60%, #101124 100%);
+    }
+  }
+  :root[data-theme="dark"] {
+    --text: #F1EEFB;
+    --text-soft: #A8A6C4;
+    --bg: var(--dusk);
+    --surface: #24213D;
+    --border: #35314F;
+    --hero-grad: radial-gradient(120% 100% at 50% -10%, #2A2C56 0%, #17182E 60%, #101124 100%);
+  }
+
+  /* ---------- Base ---------- */
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
+  }
+  h1, h2, h3 {
+    font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, 'Times New Roman', serif;
+    color: var(--text);
+    text-wrap: balance;
+    margin: 0;
+  }
+  p { margin: 0; }
+  a { color: inherit; }
+  img, svg { display: block; max-width: 100%; }
+
+  .wrap {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 0 1.75rem;
+  }
+  .prose {
+    max-width: 40rem;
+  }
+
+  /* ---------- Nav ---------- */
+  .nav {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 1.75rem 1.75rem 0;
+    max-width: 1040px;
+    margin: 0 auto;
+  }
+  .nav .mark { width: 28px; height: 24px; }
+  .nav .word {
+    font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+  :where(.hero) .nav { color: #fff; }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    background: var(--hero-grad);
+    color: #fff;
+    padding-bottom: 5rem;
+    overflow: hidden;
+  }
+  .hero-inner {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 0 1.75rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .mark-stage {
+    position: relative;
+    width: 200px;
+    height: 160px;
+    margin: 3.25rem 0 2rem;
+  }
+  .mark-glow {
+    position: absolute;
+    inset: -40px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(231,123,131,0.35) 0%, rgba(231,123,131,0) 68%);
+    animation: pulse 5s ease-in-out infinite;
+  }
+  .heart {
+    position: absolute;
+    top: 0; left: 0;
+    width: 200px; height: 160px;
+    fill: none;
+    stroke-width: 3.5;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+  .heart-a { stroke: #AEB3E8; animation: settle-a 1.4s cubic-bezier(.2,.8,.2,1) both; }
+  .heart-b { stroke: url(#heartGrad); animation: settle-b 1.4s cubic-bezier(.2,.8,.2,1) both; }
+  @keyframes settle-a { from { transform: translate(-30px, -14px) rotate(-10deg); opacity: 0; } to { transform: translate(-11px, 0); opacity: 1; } }
+  @keyframes settle-b { from { transform: translate(30px, 14px) rotate(10deg); opacity: 0; } to { transform: translate(11px, 0); opacity: 1; } }
+  @keyframes pulse { 0%, 100% { opacity: .55; transform: scale(1); } 50% { opacity: 1; transform: scale(1.08); } }
+
+  .eyebrow {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--coral);
+  }
+  .hero .eyebrow { color: var(--blush); }
+
+  h1.headline {
+    font-size: clamp(2.4rem, 5.5vw, 3.6rem);
+    font-weight: 600;
+    line-height: 1.08;
+    margin-top: 0.9rem;
+  }
+  .sub {
+    margin-top: 1.15rem;
+    font-size: 1.14rem;
+    color: #D7D6EE;
+    max-width: 34rem;
+  }
+
+  .status-pill {
+    margin-top: 1.75rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.82rem;
+    color: #E8E7F5;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.16);
+    padding: 0.45rem 0.9rem;
+    border-radius: 999px;
+  }
+  .status-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--coral);
+    box-shadow: 0 0 0 3px rgba(231,123,131,0.25);
+  }
+
+  /* ---------- Notify form ---------- */
+  .notify {
+    margin-top: 2.5rem;
+    width: 100%;
+    max-width: 26rem;
+  }
+  .notify form {
+    display: flex;
+    gap: 0.6rem;
+  }
+  .notify input[type="email"] {
+    flex: 1;
+    min-width: 0;
+    padding: 0.85rem 1.05rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.22);
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    font-size: 0.98rem;
+  }
+  .notify input[type="email"]::placeholder { color: #B9B7D6; }
+  .notify input[type="email"]:focus-visible,
+  .cta:focus-visible,
+  a:focus-visible {
+    outline: 2px solid var(--coral);
+    outline-offset: 2px;
+  }
+  .cta {
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.96rem;
+    padding: 0.85rem 1.4rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--coral), var(--blush));
+    color: #241419;
+    white-space: nowrap;
+  }
+  .honey { position: absolute; left: -9999px; }
+  .notify .note {
+    margin-top: 0.7rem;
+    font-size: 0.8rem;
+    color: #ADACC9;
+  }
+  .thanks {
+    display: none;
+    text-align: left;
+    background: rgba(201,151,31,0.16);
+    border: 1px solid rgba(201,151,31,0.4);
+    color: #F4E4B8;
+    border-radius: 12px;
+    padding: 0.9rem 1.1rem;
+    font-size: 0.94rem;
+    font-weight: 600;
+  }
+
+  /* ---------- Sections ---------- */
+  section.band { padding: 4.5rem 0; }
+  section.band.alt { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+
+  .meaning .prose { margin: 0 auto; text-align: left; }
+  .meaning h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); margin-top: 0.6rem; }
+  .meaning p { margin-top: 1.15rem; font-size: 1.04rem; color: var(--text-soft); }
+  .meaning strong { color: var(--text); font-weight: 600; }
+
+  .suggest .prose { margin: 0 auto; text-align: left; }
+  .suggest h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); margin-top: 0.6rem; }
+  .suggest p { margin-top: 1.15rem; font-size: 1.04rem; color: var(--text-soft); }
+  .suggest-form {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    max-width: 26rem;
+  }
+  .suggest-form textarea,
+  .suggest-form input[type="email"] {
+    padding: 0.85rem 1.05rem;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.98rem;
+  }
+  .suggest-form textarea { min-height: 6rem; resize: vertical; }
+  .suggest-form textarea::placeholder,
+  .suggest-form input[type="email"]::placeholder { color: var(--text-soft); }
+  .suggest-cta { color: #241419; align-self: flex-start; }
+  .suggest-thanks {
+    margin-top: 1.5rem;
+    max-width: 26rem;
+    background: rgba(201,151,31,0.12);
+    border-color: rgba(201,151,31,0.35);
+    color: var(--text);
+  }
+
+  .features .head { text-align: center; margin-bottom: 2.75rem; }
+  .features h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); margin-top: 0.6rem; }
+  .features .eyebrow { display: block; text-align: center; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.6rem 1.6rem 1.75rem;
+  }
+  .card .icon {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--coral), var(--blush));
+    margin-bottom: 1rem;
+  }
+  .card.gold .icon { background: var(--gold); }
+  .card .icon svg { width: 19px; height: 19px; stroke: #fff; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .card h3 { font-family: inherit; font-size: 1.04rem; font-weight: 700; color: var(--text); }
+  .card p { margin-top: 0.5rem; font-size: 0.95rem; color: var(--text-soft); }
+
+  /* ---------- Footer ---------- */
+  footer {
+    padding: 3rem 0 3.5rem;
+  }
+  footer .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.25rem;
+  }
+  footer .brand { display: flex; align-items: center; gap: 0.55rem; }
+  footer .brand .mark { width: 20px; height: 17px; opacity: 0.9; }
+  footer .brand .word { font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif; font-weight: 600; }
+  footer .links { display: flex; gap: 1.4rem; font-size: 0.88rem; color: var(--text-soft); }
+  footer .links a { text-decoration: none; }
+  footer .links a:hover { color: var(--coral); }
+  footer .fine { margin-top: 1.5rem; font-size: 0.78rem; color: var(--text-soft); }
+
+  @media (max-width: 640px) {
+    .grid { grid-template-columns: 1fr; }
+    .notify form { flex-direction: column; }
+    .cta { width: 100%; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .heart-a { animation: none; transform: translate(-11px, 0); opacity: 1; }
+    .heart-b { animation: none; transform: translate(11px, 0); opacity: 1; }
+    .mark-glow { animation: none; opacity: 0.7; }
+    html { scroll-behavior: auto; }
   }
 </style>
 </head>
 <body>
-<h1>Beshert</h1>
-<a href="privacy.html">Privacy Policy</a>
-<a href="terms.html">Terms of Service</a>
-<a href="test.html">Help Us Test</a>
+
+<nav class="nav">
+  <svg class="mark" viewBox="0 0 100 80" aria-hidden="true">
+    <path d="M50 74C50 74 8 47 8 20C8 8 18 0 30 0C38 0 45 5 50 13C55 5 62 0 70 0C82 0 92 8 92 20C92 47 50 74 50 74Z" fill="none" stroke="var(--ink)" stroke-width="7"/>
+  </svg>
+  <span class="word">Beshert</span>
+</nav>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="mark-stage">
+      <div class="mark-glow"></div>
+      <svg width="0" height="0">
+        <defs>
+          <linearGradient id="heartGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#E77B83"/>
+            <stop offset="100%" stop-color="#F5A8AE"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <svg class="heart heart-a" viewBox="0 0 100 80"><path d="M50 74C50 74 8 47 8 20C8 8 18 0 30 0C38 0 45 5 50 13C55 5 62 0 70 0C82 0 92 8 92 20C92 47 50 74 50 74Z"/></svg>
+      <svg class="heart heart-b" viewBox="0 0 100 80"><path d="M50 74C50 74 8 47 8 20C8 8 18 0 30 0C38 0 45 5 50 13C55 5 62 0 70 0C82 0 92 8 92 20C92 47 50 74 50 74Z"/></svg>
+    </div>
+
+    <span class="eyebrow">A Jewish dating app</span>
+    <h1 class="headline">Find your beshert.</h1>
+    <p class="sub">We match you on faith, values, and the life you're building, not just a good photo. Made for the Jewish community, starting here in South Africa.</p>
+
+    <span class="status-pill"><span class="status-dot"></span>Now in private testing, launching soon</span>
+
+    <div class="notify">
+      <form id="notify-form" action="https://formsubmit.co/sean@beshert.co.za" method="POST">
+        <input type="hidden" name="_subject" value="New Beshert launch-notify signup">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_next" value="https://www.beshert.co.za/?notified=1">
+        <input class="honey" type="text" name="_honey" tabindex="-1" autocomplete="off">
+        <input type="email" name="email" placeholder="you@email.com" required aria-label="Email address">
+        <button class="cta" type="submit">Notify me at launch</button>
+      </form>
+      <p class="note">One email, when we launch. No spam before then.</p>
+      <div class="thanks" id="thanks-banner">You're on the list. We'll email you the moment Beshert is live.</div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="band meaning">
+    <div class="wrap">
+      <div class="prose">
+        <span class="eyebrow">The word</span>
+        <h2>Beshert isn't luck. It's recognition.</h2>
+        <p>In Yiddish, <em>באַשערט</em> (beshert) means <strong>destined</strong>. It's the person you were always meant to find. Jewish tradition has long treated matchmaking as something serious and communal, not a numbers game, and that's the idea behind this app.</p>
+        <p>We built it for the Jewish community in South Africa, starting in Cape Town and Johannesburg, because we think the app should understand that denomination, observance, and how you keep a home matter just as much as a good photo.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band alt features">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Under the hood</span>
+        <h2>Built around what actually matters</h2>
+      </div>
+      <div class="grid">
+
+        <div class="card">
+          <div class="icon"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg></div>
+          <h3>Matching that goes deeper</h3>
+          <p>Denomination, observance level, how you keep kosher, how often you're at shul, whether you want kids. Set your own, and filter for theirs.</p>
+        </div>
+
+        <div class="card">
+          <div class="icon"><svg viewBox="0 0 24 24"><path d="M21 12a8.5 8.5 0 0 1-12.6 7.4L3 21l1.7-5.1A8.5 8.5 0 1 1 21 12Z"/></svg></div>
+          <h3>Prompts, not just photos</h3>
+          <p>Answer a few honest prompts so a match knows who you are before the first message.</p>
+        </div>
+
+        <div class="card">
+          <div class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3"/><path d="M5 21c0-3.9 3.1-7 7-7s7 3.1 7 7"/></svg></div>
+          <h3>Pods</h3>
+          <p>Meet a small, curated group of people at once. It's a nice change of pace from one-on-one swiping.</p>
+        </div>
+
+        <div class="card">
+          <div class="icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></div>
+          <h3>Gatherings</h3>
+          <p>Real, in-person meetups with other members. Low-pressure, and away from your phone for a bit.</p>
+        </div>
+
+        <div class="card">
+          <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.4 8.7 8 11 4.6-2.3 8-6 8-11V5l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg></div>
+          <h3>Verified, for real</h3>
+          <p>Photo verification and a visible badge, so who you're talking to is who they say they are.</p>
+        </div>
+
+        <div class="card gold">
+          <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 2v6M12 16v6M2 12h6M16 12h6M5 5l4 4M15 15l4 4M19 5l-4 4M9 15l-4 4"/></svg></div>
+          <h3>Built with care</h3>
+          <p>We're a small, independent team, not a growth-hacked machine. We'd rather get it right than get it big fast.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="band suggest">
+    <div class="wrap">
+      <div class="prose">
+        <span class="eyebrow">Got an idea?</span>
+        <h2>Tell us what would make this better.</h2>
+        <p>We're still building this, and the community's input shapes what we build next. Bug you found, feature you're missing, anything at all, we read every message.</p>
+
+        <form id="suggest-form" class="suggest-form" action="https://formsubmit.co/sean@beshert.co.za" method="POST">
+          <input type="hidden" name="_subject" value="New Beshert website suggestion">
+          <input type="hidden" name="_captcha" value="false">
+          <input type="hidden" name="_template" value="table">
+          <input type="hidden" name="_next" value="https://www.beshert.co.za/?suggested=1">
+          <input class="honey" type="text" name="_honey" tabindex="-1" autocomplete="off">
+          <textarea name="message" placeholder="What's on your mind?" required></textarea>
+          <input type="email" name="email" placeholder="Your email, if you'd like a reply (optional)">
+          <button class="cta suggest-cta" type="submit">Send it over</button>
+        </form>
+        <div class="thanks suggest-thanks" id="suggest-thanks-banner">Got it, thank you. We'll take a real look.</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="row">
+      <div class="brand">
+        <svg class="mark" viewBox="0 0 100 80" aria-hidden="true"><path d="M50 74C50 74 8 47 8 20C8 8 18 0 30 0C38 0 45 5 50 13C55 5 62 0 70 0C82 0 92 8 92 20C92 47 50 74 50 74Z" fill="none" stroke="var(--ink)" stroke-width="7"/></svg>
+        <span class="word">Beshert</span>
+      </div>
+      <div class="links">
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms of Service</a>
+        <a href="child-safety.html">Child Safety</a>
+      </div>
+    </div>
+    <p class="fine">© 2026 Beshert. Find your beshert.</p>
+  </div>
+</footer>
+
 <script>
-  if (window.location.hostname === 'www.beshert.co.za') {
-    window.location.replace('test.html');
+  var params = new URLSearchParams(window.location.search);
+  if (params.get('notified') === '1') {
+    var form = document.getElementById('notify-form');
+    var thanks = document.getElementById('thanks-banner');
+    if (form) form.style.display = 'none';
+    if (thanks) thanks.style.display = 'block';
+  }
+  if (params.get('suggested') === '1') {
+    var suggestForm = document.getElementById('suggest-form');
+    var suggestThanks = document.getElementById('suggest-thanks-banner');
+    if (suggestForm) suggestForm.style.display = 'none';
+    if (suggestThanks) suggestThanks.style.display = 'block';
   }
 </script>
 </body>
