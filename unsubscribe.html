@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Beshert — Email preferences</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; max-width: 720px; margin: 0 auto; padding: 2rem 1.5rem 4rem; color: #2A2A3C; background: #FEF9F6; }
+  h1 { font-size: 1.7rem; margin-bottom: 0.25rem; color: #D8615A; }
+  p { margin: 0.75rem 0; }
+  .muted { color: #6b6b7a; font-size: 0.95rem; }
+  a { color: #D8615A; }
+  nav { margin-bottom: 2rem; font-size: 0.9rem; }
+  @media (prefers-color-scheme: dark) {
+    body { background: #1a1a24; color: #eae8f0; }
+    .muted { color: #a9a7b5; }
+  }
+</style>
+</head>
+<body>
+<nav><a href="./">Beshert</a> / Email preferences</nav>
+
+<h1 id="title">One moment…</h1>
+<p id="detail" class="muted">Updating your email preferences.</p>
+
+<script>
+  // The unsubscribe link in our emails points here rather than straight at
+  // the backend, so nobody has to look at an infrastructure URL to opt out.
+  // This page reads the token from the query string and calls the function
+  // that actually does the work.
+  //
+  // Mail clients that support RFC 8058 One-Click never reach this page --
+  // their List-Unsubscribe header points at the function directly, because
+  // a static page cannot answer the POST they send.
+  const FUNCTION_URL =
+    'https://cwxbqkxxkrjoqpkzpfbh.supabase.co/functions/v1/email-unsubscribe';
+
+  const LABELS = {
+    messages: 'about new messages',
+    gatherings: 'about gatherings',
+  };
+
+  function show(title, detail) {
+    document.getElementById('title').textContent = title;
+    document.getElementById('detail').textContent = detail;
+  }
+
+  (async () => {
+    const params = new URLSearchParams(location.search);
+    const token = params.get('token');
+    const category = params.get('category') || 'messages';
+
+    if (!token || !LABELS[category]) {
+      show(
+        'That link looks wrong',
+        'Check the link in your email, or change your notification settings in the app.'
+      );
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        FUNCTION_URL +
+          '?token=' + encodeURIComponent(token) +
+          '&category=' + encodeURIComponent(category)
+      );
+
+      if (response.ok) {
+        show(
+          'Unsubscribed',
+          "You won't get emails " + LABELS[category] + ' any more. You can turn them back ' +
+          "on in the app under Settings, and this doesn't affect notifications on your phone."
+        );
+      } else if (response.status === 404) {
+        show(
+          'That link has expired',
+          'Change your notification settings in the app instead.'
+        );
+      } else {
+        show(
+          'That link looks wrong',
+          'Check the link in your email, or change your notification settings in the app.'
+        );
+      }
+    } catch (err) {
+      // Offline, or the request never landed. Deliberately does not claim
+      // success -- telling someone they are unsubscribed when they are not
+      // is the one outcome this page must never produce.
+      show(
+        'Something went wrong',
+        'We could not reach Beshert just now. Please try the link again in a moment.'
+      );
+    }
+  })();
+</script>
+</body>
+</html>
