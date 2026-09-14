@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Add a friend on Beshert</title>
+  <style>
+    :root { --cream: #FEF9F6; --line: #E8DFDA; --navy: #24284F; --muted: #6B6F8C; --coral: #E77B83; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      background: var(--cream); color: var(--navy); padding: 24px 16px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    main { width: 100%; max-width: 420px; background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 32px 24px; text-align: center; }
+    h1 { font-size: 24px; margin: 0 0 8px; }
+    p { color: var(--muted); line-height: 1.5; margin: 0 0 16px; }
+    .code { font-size: 30px; font-weight: 800; letter-spacing: 6px; margin: 8px 0 20px; }
+    a.button { display: block; background: var(--coral); color: #fff; text-decoration: none; font-weight: 700; padding: 14px; border-radius: 10px; margin-bottom: 10px; }
+    a.secondary { display: block; color: var(--navy); border: 1px solid var(--line); text-decoration: none; font-weight: 700; padding: 13px; border-radius: 10px; }
+    .fine { font-size: 13px; margin-top: 20px; }
+    a:focus-visible { outline: 3px solid var(--navy); outline-offset: 2px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1 id="title">Add a friend on Beshert</h1>
+    <p id="detail">Friends on Beshert can set each other up, and vouch for each other.</p>
+    <div class="code" id="code" hidden></div>
+    <a class="button" id="open" href="#" hidden>Open in Beshert</a>
+    <a class="secondary" href="https://play.google.com/store/apps/details?id=za.co.beshert.app">Get Beshert on Google Play</a>
+    <p class="fine" id="manual" hidden>Already have the app? Go to Profile, then Friends, and add this code.</p>
+  </main>
+  <script>
+    (function () {
+      // Codes are 8 characters with no 0, O, 1 or I (see 0097). Anything
+      // else is not a friend link, so nothing is shown or opened.
+      var code = (new URLSearchParams(location.search).get('code') || '').toUpperCase();
+      if (!/^[A-HJ-NP-Z2-9]{8}$/.test(code)) {
+        document.getElementById('title').textContent = 'This link looks wrong';
+        document.getElementById('detail').textContent = 'Ask your friend to send their Beshert friend link again.';
+        return;
+      }
+      document.getElementById('code').textContent = code;
+      document.getElementById('code').hidden = false;
+      document.getElementById('manual').hidden = false;
+      var open = document.getElementById('open');
+      open.href = 'beshert://friend/' + code;
+      open.hidden = false;
+    })();
+  </script>
+</body>
+</html>
